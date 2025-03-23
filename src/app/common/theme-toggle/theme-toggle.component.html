@@ -1,0 +1,8 @@
+<button class="theme-toggle-btn" (click)="toggleTheme()" [attr.aria-label]="(isDarkMode$ | async) ? 'Switch to light mode' : 'Switch to dark mode'">
+  <span class="toggle-icon" *ngIf="!(isDarkMode$ | async)">
+    <i class="bi bi-moon-fill"></i>
+  </span>
+  <span class="toggle-icon" *ngIf="isDarkMode$ | async">
+    <i class="bi bi-sun-fill"></i>
+  </span>
+</button>

@@ -1,1 +1,84 @@
-<p>settings works!</p>
+<div class="settings-container">
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <div class="card settings-card">
+          <div class="card-body">
+            <div class="text-center mb-4">
+              <div class="settings-icon">
+                <i class="bi bi-gear-fill"></i>
+              </div>
+              <h2 class="gradient-text">User Settings</h2>
+              <p class="text-muted">Customize your weather app experience</p>
+            </div>
+            
+            <div class="settings-section">
+              <h5 class="section-title">Display Preferences</h5>
+              <div class="mb-4">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="darkModeToggle">
+                  <label class="form-check-label" for="darkModeToggle">Dark Mode</label>
+                </div>
+              </div>
+              
+              <div class="mb-4">
+                <label class="form-label">Temperature Unit</label>
+                <div class="d-flex">
+                  <div class="form-check me-4">
+                    <input class="form-check-input" type="radio" name="tempUnit" id="celsius" checked>
+                    <label class="form-check-label" for="celsius">Celsius (°C)</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="tempUnit" id="fahrenheit">
+                    <label class="form-check-label" for="fahrenheit">Fahrenheit (°F)</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="settings-section">
+              <h5 class="section-title">Weather Display</h5>
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="showHumidity" checked>
+                  <label class="form-check-label" for="showHumidity">Show Humidity</label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="showWindSpeed" checked>
+                  <label class="form-check-label" for="showWindSpeed">Show Wind Speed</label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="showPressure" checked>
+                  <label class="form-check-label" for="showPressure">Show Pressure</label>
+                </div>
+              </div>
+              <div class="mb-4">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="showUvIndex">
+                  <label class="form-check-label" for="showUvIndex">Show UV Index</label>
+                </div>
+              </div>
+            </div>
+            
+            <div class="settings-section">
+              <h5 class="section-title">Default Location</h5>
+              <div class="mb-3">
+                <label for="defaultCity" class="form-label">City</label>
+                <input type="text" class="form-control" id="defaultCity" placeholder="Enter your default city">
+              </div>
+            </div>
+            
+            <div class="text-center mt-4">
+              <button type="button" class="btn btn-gradient px-4 py-2">Save Settings</button>
+              <button type="button" class="btn btn-outline-secondary px-4 py-2 ms-2">Reset to Default</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

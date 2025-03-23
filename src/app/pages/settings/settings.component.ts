@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
   styleUrl: './settings.component.css'
 })
 export class SettingsComponent {
-
+  constructor() {}
 }
