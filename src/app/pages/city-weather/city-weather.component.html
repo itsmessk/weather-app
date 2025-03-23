@@ -1,1 +1,375 @@
-<p>city-weather works!</p>
+<div class="container-fluid weather-container">
+  <div class="row">
+    <div class="col-12">
+      <div class="card search-card">
+        <div class="card-body">
+          <h2 class="card-title text-center">Weather Information</h2>
+          <div class="row g-3 align-items-center">
+            <div class="col-md-5">
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" placeholder="Enter city name" [(ngModel)]="cityName" (keyup.enter)="searchWeather()">
+                <button class="btn btn-outline-secondary" type="button" (click)="loadRandomCity()">
+                  <i class="bi bi-shuffle"></i> Random
+                </button>
+              </div>
+            </div>
+            <div class="col-md-5">
+              <select class="form-select" [(ngModel)]="selectedWeatherType">
+                <option *ngFor="let type of weatherTypes" [value]="type">{{type}} Weather</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-primary w-100" (click)="searchWeather()">
+                <i class="bi bi-cloud-sun me-2"></i>Search
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="row mt-4" *ngIf="loading">
+    <div class="col-12 text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Fetching weather data...</p>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div class="row mt-4" *ngIf="error">
+    <div class="col-12">
+      <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        {{error}}
+      </div>
+    </div>
+  </div>
+
+  <!-- Weather Data Display -->
+  <div class="row mt-4" *ngIf="weatherData && !loading">
+    <div class="col-md-6">
+      <!-- Current Weather -->
+      <div class="card weather-card" *ngIf="selectedWeatherType === 'Current' && weatherData.current">
+        <div class="card-header">
+          <h3>Current Weather in {{weatherData.location.name}}, {{weatherData.location.country}}</h3>
+          <p>{{getFormattedDate(weatherData.location.localtime)}}</p>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6 text-center">
+              <img [src]="weatherData.current.condition.icon" alt="Weather icon" class="weather-icon">
+              <h4>{{weatherData.current.condition.text}}</h4>
+            </div>
+            <div class="col-md-6">
+              <div class="weather-details">
+                <p><i class="bi bi-thermometer-half"></i> Temperature: {{weatherData.current.temp_c}}°C / {{weatherData.current.temp_f}}°F</p>
+                <p><i class="bi bi-droplet-half"></i> Humidity: {{weatherData.current.humidity}}%</p>
+                <p><i class="bi bi-wind"></i> Wind: {{weatherData.current.wind_kph}} km/h</p>
+                <p><i class="bi bi-compass"></i> Wind Direction: {{weatherData.current.wind_dir}}</p>
+                <p><i class="bi bi-eye"></i> Visibility: {{weatherData.current.vis_km}} km</p>
+                <p><i class="bi bi-arrow-down-circle"></i> Pressure: {{weatherData.current.pressure_mb}} mb</p>
+                <p *ngIf="weatherData.current.air_quality"><i class="bi bi-lungs"></i> Air Quality: 
+                  <span class="badge bg-{{getAQIColor(weatherData.current.air_quality.us_epa_index)}}">
+                    {{getAQIDescription(weatherData.current.air_quality.us_epa_index)}}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Forecast Weather -->
+      <div class="card weather-card" *ngIf="selectedWeatherType === 'Forecast' && forecastData">
+        <div class="card-header">
+          <h3>Weather Forecast for {{weatherData.location.name}}, {{weatherData.location.country}}</h3>
+        </div>
+        <div class="card-body">
+          <div class="accordion" id="forecastAccordion">
+            <div class="accordion-item" *ngFor="let day of forecastData; let i = index">
+              <h2 class="accordion-header">
+                <button class="accordion-button" [class.collapsed]="i !== 0" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse' + i" [attr.aria-expanded]="i === 0 ? 'true' : 'false'" [attr.aria-controls]="'collapse' + i">
+                  {{getFormattedDate(day.date)}} - {{day.day.condition.text}}
+                </button>
+              </h2>
+              <div [id]="'collapse' + i" class="accordion-collapse collapse" [class.show]="i === 0" [attr.data-bs-parent]="'#forecastAccordion'">
+                <div class="accordion-body">
+                  <div class="row">
+                    <div class="col-md-6 text-center">
+                      <img [src]="day.day.condition.icon" alt="Weather icon" class="weather-icon">
+                      <h5>{{day.day.condition.text}}</h5>
+                    </div>
+                    <div class="col-md-6">
+                      <p><i class="bi bi-thermometer-high"></i> Max Temp: {{day.day.maxtemp_c}}°C / {{day.day.maxtemp_f}}°F</p>
+                      <p><i class="bi bi-thermometer-low"></i> Min Temp: {{day.day.mintemp_c}}°C / {{day.day.mintemp_f}}°F</p>
+                      <p><i class="bi bi-droplet-half"></i> Avg Humidity: {{day.day.avghumidity}}%</p>
+                      <p><i class="bi bi-umbrella"></i> Chance of Rain: {{day.day.daily_chance_of_rain}}%</p>
+                      <p><i class="bi bi-wind"></i> Max Wind: {{day.day.maxwind_kph}} km/h</p>
+                    </div>
+                  </div>
+                  <div class="hourly-forecast mt-3">
+                    <h5>Hourly Forecast</h5>
+                    <div class="hourly-scroll">
+                      <div class="hourly-item" *ngFor="let hour of day.hour">
+                        <p class="time">{{getHourFromTime(hour.time)}}:00</p>
+                        <img [src]="hour.condition.icon" alt="Weather icon" class="hourly-icon">
+                        <p class="temp">{{hour.temp_c}}°C</p>
+                        <p class="condition">{{hour.condition.text}}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Astronomy Weather -->
+      <div class="card weather-card" *ngIf="selectedWeatherType === 'Astronomy' && weatherData.astronomy">
+        <div class="card-header">
+          <h3>Astronomy for {{weatherData.location.name}}, {{weatherData.location.country}}</h3>
+          <p>{{getFormattedDate(weatherData.location.localtime)}}</p>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-md-6">
+              <div class="astronomy-item">
+                <i class="bi bi-sunrise fs-1"></i>
+                <h5>Sunrise</h5>
+                <p>{{weatherData.astronomy.astro.sunrise}}</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="astronomy-item">
+                <i class="bi bi-sunset fs-1"></i>
+                <h5>Sunset</h5>
+                <p>{{weatherData.astronomy.astro.sunset}}</p>
+              </div>
+            </div>
+            <div class="col-md-6 mt-4">
+              <div class="astronomy-item">
+                <i class="bi bi-moon fs-1"></i>
+                <h5>Moonrise</h5>
+                <p>{{weatherData.astronomy.astro.moonrise}}</p>
+              </div>
+            </div>
+            <div class="col-md-6 mt-4">
+              <div class="astronomy-item">
+                <i class="bi bi-moon-stars fs-1"></i>
+                <h5>Moonset</h5>
+                <p>{{weatherData.astronomy.astro.moonset}}</p>
+              </div>
+            </div>
+            <div class="col-12 mt-4">
+              <div class="astronomy-item">
+                <i class="bi bi-moon-fill fs-1"></i>
+                <h5>Moon Phase</h5>
+                <p>{{weatherData.astronomy.astro.moon_phase}}</p>
+                <p>Moon Illumination: {{weatherData.astronomy.astro.moon_illumination}}%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerts Weather -->
+      <div class="card weather-card" *ngIf="selectedWeatherType === 'Alerts' && weatherData.alerts">
+        <div class="card-header">
+          <h3>Weather Alerts for {{weatherData.location.name}}, {{weatherData.location.country}}</h3>
+        </div>
+        <div class="card-body">
+          <div *ngIf="weatherData.alerts.alert && weatherData.alerts.alert.length > 0">
+            <div class="alert alert-warning" *ngFor="let alert of weatherData.alerts.alert">
+              <h5><i class="bi bi-exclamation-triangle me-2"></i>{{alert.headline}}</h5>
+              <p>{{alert.desc}}</p>
+              <p><strong>Category:</strong> {{alert.category}}</p>
+              <p><strong>Severity:</strong> {{alert.severity}}</p>
+              <p><strong>Effective:</strong> {{getFormattedDate(alert.effective)}}</p>
+              <p><strong>Expires:</strong> {{getFormattedDate(alert.expires)}}</p>
+            </div>
+          </div>
+          <div *ngIf="!weatherData.alerts.alert || weatherData.alerts.alert.length === 0">
+            <div class="alert alert-success">
+              <i class="bi bi-check-circle me-2"></i>
+              No weather alerts for this location.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Air Quality Weather -->
+      <div class="card weather-card" *ngIf="selectedWeatherType === 'Air Quality' && weatherData.current">
+        <div class="card-header">
+          <h3>Air Quality in {{weatherData.location.name}}, {{weatherData.location.country}}</h3>
+          <p>{{getFormattedDate(weatherData.location.localtime)}}</p>
+        </div>
+        <div class="card-body" *ngIf="weatherData.current.air_quality">
+          <div class="row">
+            <div class="col-12 text-center mb-4">
+              <div class="alert alert-{{getAQIColor(weatherData.current.air_quality.us_epa_index)}}">
+                <h4><i class="bi bi-lungs"></i> Air Quality Index: {{getAQIDescription(weatherData.current.air_quality.us_epa_index)}}</h4>
+                <p>US EPA Index: {{weatherData.current.air_quality.us_epa_index}}/6</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="air-quality-item">
+                <h5>CO (Carbon Monoxide)</h5>
+                <p>{{weatherData.current.air_quality.co.toFixed(2)}} μg/m³</p>
+              </div>
+              <div class="air-quality-item mt-3">
+                <h5>NO₂ (Nitrogen Dioxide)</h5>
+                <p>{{weatherData.current.air_quality.no2.toFixed(2)}} μg/m³</p>
+              </div>
+              <div class="air-quality-item mt-3">
+                <h5>O₃ (Ozone)</h5>
+                <p>{{weatherData.current.air_quality.o3.toFixed(2)}} μg/m³</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="air-quality-item">
+                <h5>SO₂ (Sulfur Dioxide)</h5>
+                <p>{{weatherData.current.air_quality.so2.toFixed(2)}} μg/m³</p>
+              </div>
+              <div class="air-quality-item mt-3">
+                <h5>PM2.5 (Fine Particles)</h5>
+                <p>{{weatherData.current.air_quality.pm2_5.toFixed(2)}} μg/m³</p>
+              </div>
+              <div class="air-quality-item mt-3">
+                <h5>PM10 (Coarse Particles)</h5>
+                <p>{{weatherData.current.air_quality.pm10.toFixed(2)}} μg/m³</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body" *ngIf="!weatherData.current.air_quality">
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            Air quality data is not available for this location.
+          </div>
+        </div>
+      </div>
+
+      <!-- Sports Weather -->
+      <div class="card weather-card" *ngIf="selectedWeatherType === 'Sports' && weatherData.football">
+        <div class="card-header">
+          <h3>Sports Events near {{weatherData.location?.name || cityName}}</h3>
+        </div>
+        <div class="card-body">
+          <ul class="nav nav-tabs" id="sportsTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="football-tab" data-bs-toggle="tab" data-bs-target="#football" type="button" role="tab" aria-controls="football" aria-selected="true">Football</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="cricket-tab" data-bs-toggle="tab" data-bs-target="#cricket" type="button" role="tab" aria-controls="cricket" aria-selected="false">Cricket</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="golf-tab" data-bs-toggle="tab" data-bs-target="#golf" type="button" role="tab" aria-controls="golf" aria-selected="false">Golf</button>
+            </li>
+          </ul>
+          <div class="tab-content mt-3" id="sportsTabContent">
+            <div class="tab-pane fade show active" id="football" role="tabpanel" aria-labelledby="football-tab">
+              <div *ngIf="weatherData.football && weatherData.football.length > 0">
+                <div class="card mb-2" *ngFor="let match of weatherData.football">
+                  <div class="card-body">
+                    <h5 class="card-title">{{match.match}}</h5>
+                    <p class="card-text">{{match.tournament}} - {{match.country}}</p>
+                    <p class="card-text"><small class="text-muted">{{match.start}}</small></p>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="!weatherData.football || weatherData.football.length === 0">
+                <div class="alert alert-info">No football matches scheduled.</div>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="cricket" role="tabpanel" aria-labelledby="cricket-tab">
+              <div *ngIf="weatherData.cricket && weatherData.cricket.length > 0">
+                <div class="card mb-2" *ngFor="let match of weatherData.cricket">
+                  <div class="card-body">
+                    <h5 class="card-title">{{match.match}}</h5>
+                    <p class="card-text">{{match.tournament}} - {{match.country}}</p>
+                    <p class="card-text"><small class="text-muted">{{match.start}}</small></p>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="!weatherData.cricket || weatherData.cricket.length === 0">
+                <div class="alert alert-info">No cricket matches scheduled.</div>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="golf" role="tabpanel" aria-labelledby="golf-tab">
+              <div *ngIf="weatherData.golf && weatherData.golf.length > 0">
+                <div class="card mb-2" *ngFor="let tournament of weatherData.golf">
+                  <div class="card-body">
+                    <h5 class="card-title">{{tournament.tournament}}</h5>
+                    <p class="card-text">{{tournament.country}}</p>
+                    <p class="card-text"><small class="text-muted">{{tournament.start}} - {{tournament.end}}</small></p>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="!weatherData.golf || weatherData.golf.length === 0">
+                <div class="alert alert-info">No golf tournaments scheduled.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Historical Weather -->
+      <div class="card weather-card" *ngIf="selectedWeatherType === 'Historical' && weatherData.forecast">
+        <div class="card-header">
+          <h3>Historical Weather for {{weatherData.location.name}}, {{weatherData.location.country}}</h3>
+          <p>Yesterday's Weather ({{getFormattedDate(weatherData.forecast.forecastday[0].date)}})</p>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6 text-center">
+              <img [src]="weatherData.forecast.forecastday[0].day.condition.icon" alt="Weather icon" class="weather-icon">
+              <h4>{{weatherData.forecast.forecastday[0].day.condition.text}}</h4>
+            </div>
+            <div class="col-md-6">
+              <div class="weather-details">
+                <p><i class="bi bi-thermometer-high"></i> Max Temp: {{weatherData.forecast.forecastday[0].day.maxtemp_c}}°C</p>
+                <p><i class="bi bi-thermometer-low"></i> Min Temp: {{weatherData.forecast.forecastday[0].day.mintemp_c}}°C</p>
+                <p><i class="bi bi-thermometer-half"></i> Avg Temp: {{weatherData.forecast.forecastday[0].day.avgtemp_c}}°C</p>
+                <p><i class="bi bi-droplet-half"></i> Avg Humidity: {{weatherData.forecast.forecastday[0].day.avghumidity}}%</p>
+                <p><i class="bi bi-wind"></i> Max Wind: {{weatherData.forecast.forecastday[0].day.maxwind_kph}} km/h</p>
+                <p><i class="bi bi-cloud-rain"></i> Total Precipitation: {{weatherData.forecast.forecastday[0].day.totalprecip_mm}} mm</p>
+                <p><i class="bi bi-sun"></i> UV Index: {{weatherData.forecast.forecastday[0].day.uv}}</p>
+              </div>
+            </div>
+          </div>
+          <div class="hourly-forecast mt-4">
+            <h5>Hourly Historical Data</h5>
+            <div class="hourly-scroll">
+              <div class="hourly-item" *ngFor="let hour of weatherData.forecast.forecastday[0].hour">
+                <p class="time">{{getHourFromTime(hour.time)}}:00</p>
+                <img [src]="hour.condition.icon" alt="Weather icon" class="hourly-icon">
+                <p class="temp">{{hour.temp_c}}°C</p>
+                <p class="condition">{{hour.condition.text}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Display -->
+    <div class="col-md-6">
+      <div class="card map-card">
+        <div class="card-header">
+          <h3>Location Map</h3>
+        </div>
+        <div class="card-body position-relative">
+          <div id="map" class="map-container" style="height: 400px; width: 100%;"></div>
+          <!-- Weather Effect Overlay -->
+          <div *ngIf="currentWeather" class="weather-effect-overlay" [ngClass]="getWeatherEffectClass(currentWeather.condition.code)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

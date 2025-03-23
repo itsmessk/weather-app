@@ -1,0 +1,42 @@
+<div class="news-container">
+  <div class="news-header">
+    <h3><i class="bi bi-newspaper"></i> Weather News</h3>
+  </div>
+  
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="text-center my-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading weather news...</p>
+  </div>
+  
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger" role="alert">
+    {{ error }}
+  </div>
+  
+  <!-- News List -->
+  <div *ngIf="!loading && !error" class="news-list">
+    <div *ngFor="let item of newsItems" class="news-item">
+      <div class="news-image" [style.background-image]="'url(' + item.urlToImage + ')'"></div>
+      <div class="news-content">
+        <div class="news-source">
+          <span class="badge bg-secondary">{{ item.source.name }}</span>
+          <small class="text-muted">{{ item.publishedAt | dateFormat:'relative' }}</small>
+        </div>
+        <h4 class="news-title">{{ item.title }}</h4>
+        <p class="news-description">{{ item.description }}</p>
+        <a [href]="item.url" target="_blank" class="btn btn-sm btn-outline-primary">Read More</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && newsItems.length === 0" class="empty-state">
+    <div class="text-center my-4">
+      <i class="bi bi-inbox display-4 text-muted"></i>
+      <p class="mt-2">No weather news available at the moment.</p>
+    </div>
+  </div>
+</div>

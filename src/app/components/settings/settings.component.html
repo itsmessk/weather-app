@@ -1,0 +1,93 @@
+<div class="settings-container">
+  <div class="card">
+    <div class="card-header">
+      <h2>User Settings</h2>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="saveSettings()">
+        <!-- Temperature Unit -->
+        <div class="mb-3">
+          <label for="temperatureUnit" class="form-label">Temperature Unit</label>
+          <select id="temperatureUnit" class="form-select" [(ngModel)]="settings.temperatureUnit" name="temperatureUnit">
+            <option *ngFor="let unit of temperatureUnits" [value]="unit.value">{{ unit.label }}</option>
+          </select>
+        </div>
+        
+        <!-- Default City -->
+        <div class="mb-3">
+          <label for="defaultCity" class="form-label">Default City</label>
+          <input type="text" class="form-control" id="defaultCity" [(ngModel)]="settings.defaultCity" name="defaultCity">
+        </div>
+        
+        <!-- Refresh Interval -->
+        <div class="mb-3">
+          <label for="refreshInterval" class="form-label">Data Refresh Interval</label>
+          <select id="refreshInterval" class="form-select" [(ngModel)]="settings.refreshInterval" name="refreshInterval">
+            <option *ngFor="let interval of refreshIntervals" [value]="interval.value">{{ interval.label }}</option>
+          </select>
+        </div>
+        
+        <!-- Dashboard Layout -->
+        <div class="mb-3">
+          <label class="form-label">Dashboard Layout</label>
+          <div class="d-flex gap-3">
+            <div class="form-check" *ngFor="let layout of dashboardLayouts">
+              <input class="form-check-input" type="radio" [id]="'layout-' + layout.value" 
+                     [value]="layout.value" [(ngModel)]="settings.dashboardLayout" name="dashboardLayout">
+              <label class="form-check-label" [for]="'layout-' + layout.value">
+                {{ layout.label }}
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Notifications -->
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" id="showNotifications" 
+                 [(ngModel)]="settings.showNotifications" name="showNotifications">
+          <label class="form-check-label" for="showNotifications">Enable Weather Notifications</label>
+        </div>
+        
+        <!-- Theme Toggle -->
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" id="darkMode" 
+                 [checked]="isDarkMode" (change)="toggleDarkMode()" name="darkMode">
+          <label class="form-check-label" for="darkMode">Dark Mode</label>
+        </div>
+        
+        <!-- Favorite Locations -->
+        <div class="mb-4">
+          <label class="form-label">Favorite Locations</label>
+          <div class="input-group mb-2">
+            <input type="text" class="form-control" placeholder="Add location" 
+                   [(ngModel)]="newLocation" name="newLocation">
+            <button class="btn btn-outline-secondary" type="button" (click)="addLocation()">
+              <i class="bi bi-plus"></i> Add
+            </button>
+          </div>
+          <div class="favorite-locations">
+            <div class="favorite-location-item" *ngFor="let location of settings.favoriteLocations">
+              <span>{{ location }}</span>
+              <button type="button" class="btn btn-sm btn-danger" (click)="removeLocation(location)">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+            <div *ngIf="settings.favoriteLocations.length === 0" class="text-muted">
+              No favorite locations added yet.
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-outline-danger" (click)="resetSettings()">
+            Reset to Default
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Save Settings
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

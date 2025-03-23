@@ -11,11 +11,20 @@ import { HomeComponent } from './pages/home/home.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { CitySearchComponent } from './components/city-search/city-search.component';
 import { MapViewComponent } from './components/map-view/map-view.component';
-import { TemperaturePipe } from './pipes/temperature.pipe';
 import { HighlightDirective } from './directives/highlight.directive';
 import { ThemeToggleComponent } from './common/theme-toggle/theme-toggle.component';
 import { FooterComponent } from './common/footer/footer.component';
 import { ContactComponent } from './pages/contact/contact.component';
+
+// Additional components
+import { WeatherDashboardComponent } from './components/weather-dashboard/weather-dashboard.component';
+import { WeatherNewsComponent } from './components/weather-news/weather-news.component';
+import { SettingsComponent } from './components/settings/settings.component';
+
+// Pipes
+import { TemperaturePipe } from './pipes/temperature.pipe';
+import { WeatherIconPipe } from './pipes/weather-icon.pipe';
+import { DateFormatPipe } from './pipes/date-format.pipe';
 
 @NgModule({
   declarations: [
@@ -26,11 +35,18 @@ import { ContactComponent } from './pages/contact/contact.component';
     NotFoundComponent,
     CitySearchComponent,
     MapViewComponent,
-    TemperaturePipe,
     HighlightDirective,
     ThemeToggleComponent,
     FooterComponent,
-    ContactComponent
+    ContactComponent,
+    // Additional components
+    WeatherDashboardComponent,
+    WeatherNewsComponent,
+    SettingsComponent,
+    // Pipes
+    TemperaturePipe,
+    WeatherIconPipe,
+    DateFormatPipe
   ],
   imports: [
     BrowserModule,

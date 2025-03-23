@@ -1,0 +1,154 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h2>Weather Dashboard</h2>
+    <div class="dashboard-controls">
+      <button class="btn btn-sm" [class.btn-primary]="dashboardLayout === 'grid'" 
+              [class.btn-outline-primary]="dashboardLayout !== 'grid'"
+              (click)="dashboardLayout = 'grid'; settingsService.updateSettings({dashboardLayout: 'grid'})">
+        <i class="bi bi-grid"></i> Grid
+      </button>
+      <button class="btn btn-sm" [class.btn-primary]="dashboardLayout === 'list'" 
+              [class.btn-outline-primary]="dashboardLayout !== 'list'"
+              (click)="dashboardLayout = 'list'; settingsService.updateSettings({dashboardLayout: 'list'})">
+        <i class="bi bi-list-ul"></i> List
+      </button>
+      <button class="btn btn-sm btn-outline-secondary" (click)="loadAllWeatherData()">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+    </div>
+  </div>
+  
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="text-center my-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2">Loading weather data...</p>
+  </div>
+  
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-danger my-3" role="alert">
+    {{ error }}
+    <button type="button" class="btn-close float-end" (click)="error = ''"></button>
+  </div>
+  
+  <!-- No Favorites Message -->
+  <div *ngIf="!loading && favoriteLocations.length === 0" class="empty-state">
+    <div class="text-center my-5">
+      <i class="bi bi-cloud-slash display-1 text-muted"></i>
+      <h3 class="mt-3">No favorite locations</h3>
+      <p class="text-muted">Add locations in settings to see their weather here.</p>
+      <button class="btn btn-primary mt-2" routerLink="/settings">
+        Go to Settings
+      </button>
+    </div>
+  </div>
+  
+  <!-- Grid Layout -->
+  <div *ngIf="!loading && favoriteLocations.length > 0 && dashboardLayout === 'grid'" class="weather-grid">
+    <div *ngFor="let city of favoriteLocations" class="weather-card" 
+         [ngClass]="weatherData[city]?.current ? getBackgroundClass(weatherData[city].current.condition.code) : 'bg-default'"
+         (click)="viewCityDetails(city)">
+      <div *ngIf="weatherData[city]" class="weather-card-content">
+        <div class="location-info">
+          <h3>{{ city }}</h3>
+          <p>{{ weatherData[city].location.country }}</p>
+          <button class="btn btn-sm btn-danger favorite-btn" (click)="removeFromFavorites(city, $event)">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        
+        <div class="weather-info">
+          <div class="temperature">
+            {{ weatherData[city].current.temp_c | temperature:temperatureUnit }}
+          </div>
+          <div class="condition">
+            <i [class]="weatherData[city].current.condition.code | weatherIcon:weatherData[city].current.is_day"></i>
+            <span>{{ weatherData[city].current.condition.text }}</span>
+          </div>
+        </div>
+        
+        <div class="weather-details">
+          <div class="detail-item">
+            <i class="bi bi-droplet"></i>
+            <span>{{ weatherData[city].current.humidity }}%</span>
+          </div>
+          <div class="detail-item">
+            <i class="bi bi-wind"></i>
+            <span>{{ weatherData[city].current.wind_kph }} km/h</span>
+          </div>
+          <div class="detail-item">
+            <i class="bi bi-eye"></i>
+            <span>{{ weatherData[city].current.vis_km }} km</span>
+          </div>
+        </div>
+        
+        <div class="last-updated">
+          Updated {{ weatherData[city].current.last_updated | dateFormat:'relative' }}
+        </div>
+      </div>
+      
+      <div *ngIf="!weatherData[city]" class="weather-card-content loading-card">
+        <div class="spinner-border spinner-border-sm text-light" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p>Loading data for {{ city }}...</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- List Layout -->
+  <div *ngIf="!loading && favoriteLocations.length > 0 && dashboardLayout === 'list'" class="weather-list">
+    <div *ngFor="let city of favoriteLocations" class="weather-list-item"
+         [ngClass]="weatherData[city]?.current ? getBackgroundClass(weatherData[city].current.condition.code) : 'bg-default'"
+         (click)="viewCityDetails(city)">
+      <div *ngIf="weatherData[city]" class="weather-list-content">
+        <div class="location-column">
+          <h3>{{ city }}</h3>
+          <p>{{ weatherData[city].location.country }}</p>
+        </div>
+        
+        <div class="condition-column">
+          <i [class]="weatherData[city].current.condition.code | weatherIcon:weatherData[city].current.is_day"></i>
+          <span>{{ weatherData[city].current.condition.text }}</span>
+        </div>
+        
+        <div class="temperature-column">
+          {{ weatherData[city].current.temp_c | temperature:temperatureUnit }}
+        </div>
+        
+        <div class="details-column">
+          <div class="detail-item">
+            <i class="bi bi-droplet"></i>
+            <span>{{ weatherData[city].current.humidity }}%</span>
+          </div>
+          <div class="detail-item">
+            <i class="bi bi-wind"></i>
+            <span>{{ weatherData[city].current.wind_kph }} km/h</span>
+          </div>
+        </div>
+        
+        <div class="actions-column">
+          <button class="btn btn-sm btn-danger" (click)="removeFromFavorites(city, $event)">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div *ngIf="!weatherData[city]" class="weather-list-content loading-item">
+        <div class="spinner-border spinner-border-sm" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p>Loading data for {{ city }}...</p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Auto-refresh indicator -->
+  <div class="auto-refresh-info text-muted text-center mt-3">
+    <small>
+      <i class="bi bi-arrow-repeat"></i> 
+      Auto-refreshes every {{ refreshInterval }} minutes
+    </small>
+  </div>
+</div>
