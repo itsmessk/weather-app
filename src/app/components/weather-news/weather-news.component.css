@@ -80,23 +80,72 @@
   color: #6c757d;
 }
 
-/* Dark theme support */
+/* Dark theme support - Enhanced */
 :host-context(.dark-theme) .news-container {
-  background-color: #2d3748;
-  color: #e2e8f0;
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 :host-context(.dark-theme) .news-header {
-  border-bottom-color: #4a5568;
+  border-bottom-color: rgba(255, 255, 255, 0.1);
 }
 
 :host-context(.dark-theme) .news-description {
-  color: #a0aec0;
+  color: var(--text-secondary);
 }
 
 :host-context(.dark-theme) .news-item {
-  background-color: #1a202c;
+  background-color: rgba(0, 0, 0, 0.2);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+:host-context(.dark-theme) .news-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-color: rgba(var(--primary-rgb), 0.3);
+}
+
+:host-context(.dark-theme) .news-title {
+  color: var(--text-primary);
+}
+
+:host-context(.dark-theme) .badge {
+  background-color: rgba(var(--primary-rgb), 0.3);
+  color: var(--text-primary);
+}
+
+:host-context(.dark-theme) .btn-outline-primary {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+:host-context(.dark-theme) .btn-outline-primary:hover {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+:host-context(.dark-theme) .text-muted {
+  color: var(--text-secondary) !important;
+}
+
+:host-context(.dark-theme) .empty-state {
+  color: var(--text-secondary);
+}
+
+:host-context(.dark-theme) .spinner-border {
+  border-color: var(--text-secondary);
+  border-right-color: transparent;
+}
+
+/* Loading animation enhancement */
+.spinner-border {
+  animation: spinner-border 1s linear infinite;
+}
+
+@keyframes spinner-border {
+  to { transform: rotate(360deg); }
 }
 
 /* Responsive adjustments */

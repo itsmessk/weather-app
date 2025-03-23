@@ -39,10 +39,14 @@
 
 .weather-card-content {
   padding: 20px;
-  color: rgb(0, 0, 0);
+  color: var(--text-primary-light);
   height: 100%;
   display: flex;
   flex-direction: column;
+}
+
+:host-context(.dark-theme) .weather-card-content {
+  color: var(--text-primary-dark);
 }
 
 .location-info {
