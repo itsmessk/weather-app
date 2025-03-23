@@ -1,1 +1,39 @@
-<p>not-found works!</p>
+<app-menu-bar></app-menu-bar>
+
+<div class="not-found-container" [ngClass]="{'dark-theme': isDarkMode}">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 text-center">
+        <div class="error-container">
+          <div class="error-icon">
+            <i class="bi bi-cloud-lightning-rain"></i>
+          </div>
+          <h1 class="error-code">404</h1>
+          <h2 class="error-title">Page Not Found</h2>
+          <p class="error-message">
+            Looks like you've wandered into a weather anomaly! The page you're looking for seems to have been blown away.
+          </p>
+          <div class="weather-animation">
+            <div class="cloud"></div>
+            <div class="rain"></div>
+          </div>
+          <div class="actions mt-4">
+            <a routerLink="/home" class="btn btn-primary btn-lg">
+              <i class="bi bi-house-door me-2"></i>Return Home
+            </a>
+            <a routerLink="/city-weather" class="btn btn-outline-primary btn-lg ms-3">
+              <i class="bi bi-cloud-sun me-2"></i>Check Weather
+            </a>
+          </div>
+          <div class="mt-4">
+            <p class="text-muted">
+              Need help? <a routerLink="/contact">Contact our support team</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

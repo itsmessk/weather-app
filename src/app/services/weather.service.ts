@@ -8,7 +8,7 @@ import {
   AlertsResponse, 
   SportsResponse, 
   HistoricalResponse 
-} from '../models/weather.model';
+} from '../models/weather';
 
 @Injectable({
   providedIn: 'root'

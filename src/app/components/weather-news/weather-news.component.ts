@@ -31,7 +31,7 @@ export class WeatherNewsComponent implements OnInit, OnDestroy {
       title: 'Record-Breaking Heat Wave Sweeps Across the Country',
       description: 'Temperatures soar to unprecedented levels as heat wave continues to impact multiple regions.',
       url: 'https://example.com/news/1',
-      urlToImage: 'https://via.placeholder.com/300x200?text=Heat+Wave',
+      urlToImage: 'http://localhost:8090/1.jpg',
       publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
       source: { name: 'Weather News Network' }
     },

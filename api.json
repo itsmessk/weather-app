@@ -1,0 +1,18 @@
+{
+  "Enquiry": [
+    {
+      "id": "1",
+      "name": "John Doe",
+      "email": "example@google.com",
+      "subject": "Product Enquiry",
+      "message": "Hello, I am interested in your product."
+    },
+    {
+      "id": "300e",
+      "name": "dghsgh",
+      "email": "gsdfg@fh.gfh",
+      "subject": "dffhxfgh",
+      "message": "fgxngf"
+    }
+  ]
+}

@@ -10,7 +10,7 @@ import { ThemeService } from '../../services/theme.service';
 import { 
   CurrentWeatherResponse, 
   WeatherLocation
-} from '../../models/weather.model';
+} from '../../models/weather';
 
 interface WeatherResult {
   city: string;

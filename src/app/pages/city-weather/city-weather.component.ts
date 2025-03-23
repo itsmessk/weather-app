@@ -14,7 +14,7 @@ import {
   Location as WeatherLocation,
   Forecast,
   ForecastDay
-} from '../../models/weather.model';
+} from '../../models/weather';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 

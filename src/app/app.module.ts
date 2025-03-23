@@ -9,9 +9,6 @@ import { MenuBarComponent } from './common/menu-bar/menu-bar.component';
 import { LoginComponent } from './common/login/login.component';
 import { HomeComponent } from './pages/home/home.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
-import { CitySearchComponent } from './components/city-search/city-search.component';
-import { MapViewComponent } from './components/map-view/map-view.component';
-import { HighlightDirective } from './directives/highlight.directive';
 import { ThemeToggleComponent } from './common/theme-toggle/theme-toggle.component';
 import { FooterComponent } from './common/footer/footer.component';
 import { ContactComponent } from './pages/contact/contact.component';
@@ -34,18 +31,13 @@ import { DateFormatPipe } from './pipes/date-format.pipe';
     LoginComponent,
     HomeComponent,
     NotFoundComponent,
-    CitySearchComponent,
-    MapViewComponent,
-    HighlightDirective,
     ThemeToggleComponent,
     FooterComponent,
     ContactComponent,
     CityWeatherComponent,
-    // Additional components
     WeatherDashboardComponent,
     WeatherNewsComponent,
     SettingsComponent,
-    // Pipes
     TemperaturePipe,
     WeatherIconPipe,
     DateFormatPipe

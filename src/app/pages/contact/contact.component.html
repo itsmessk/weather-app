@@ -12,30 +12,45 @@
               <p class="text-muted">We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
             </div>
             
-            <form>
+            <!-- Success message -->
+            <div *ngIf="submitSuccess" class="alert alert-success mb-4">
+              <i class="bi bi-check-circle-fill me-2"></i>
+              {{ successMessage }}
+            </div>
+            
+            <form (submit)="submit()">
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label for="name" class="form-label">Name</label>
-                  <input type="text" class="form-control" id="name" placeholder="Your name">
+                  <input type="text" class="form-control" id="name" placeholder="Your name" [(ngModel)]="name" name="name">
                 </div>
                 <div class="col-md-6 mb-3">
                   <label for="email" class="form-label">Email</label>
-                  <input type="email" class="form-control" id="email" placeholder="Your email">
+                  <input type="email" class="form-control" id="email" placeholder="Your email" [(ngModel)]="email" name="email">
                 </div>
               </div>
               
               <div class="mb-3">
                 <label for="subject" class="form-label">Subject</label>
-                <input type="text" class="form-control" id="subject" placeholder="Subject">
+                <input type="text" class="form-control" id="subject" placeholder="Subject" [(ngModel)]="subject" name="subject">
               </div>
               
               <div class="mb-4">
                 <label for="message" class="form-label">Message</label>
-                <textarea class="form-control" id="message" rows="5" placeholder="Your message"></textarea>
+                <textarea class="form-control" id="message" rows="5" placeholder="Your message" [(ngModel)]="message" name="message"></textarea>
+              </div>
+              
+              <div *ngIf="errors.length > 0" class="alert alert-danger mb-3">
+                <ul class="mb-0">
+                  <li *ngFor="let error of errors">{{ error }}</li>
+                </ul>
               </div>
               
               <div class="text-center">
-                <button type="submit" class="btn btn-gradient px-4 py-2">Send Message</button>
+                <button type="submit" class="btn btn-gradient px-4 py-2" [disabled]="isSubmitting">
+                  <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  {{ isSubmitting ? 'Sending...' : 'Send Message' }}
+                </button>
               </div>
             </form>
           </div>
