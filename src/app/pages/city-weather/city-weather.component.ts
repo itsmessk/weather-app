@@ -50,13 +50,21 @@ export class CityWeatherComponent implements OnInit, AfterViewInit, OnDestroy {
     // Fix Leaflet icon issues
     this.fixLeafletIconIssue();
     
-    // Get city name from route parameter if available
+    // Get city name from route parameter or URL query parameters
     this.route.paramMap.pipe(
       takeUntil(this.destroy$)
     ).subscribe(params => {
       const cityParam = params.get('cityName');
       if (cityParam) {
         this.cityName = cityParam;
+      } else {
+        // If no route param, check for query param
+        this.route.queryParamMap.subscribe(queryParams => {
+          const cityQuery = queryParams.get('city');
+          if (cityQuery) {
+            this.cityName = cityQuery;
+          }
+        });
       }
       
       // Load city weather
@@ -71,6 +79,19 @@ export class CityWeatherComponent implements OnInit, AfterViewInit, OnDestroy {
         this.updateMapTiles(isDark);
       }
     });
+
+    // Listen for window refresh events
+    window.addEventListener('beforeunload', () => {
+      // Store current city in sessionStorage to restore after refresh
+      sessionStorage.setItem('lastViewedCity', this.cityName);
+    });
+
+    // Check if there's a stored city from a previous session
+    const lastViewedCity = sessionStorage.getItem('lastViewedCity');
+    if (lastViewedCity && !this.route.snapshot.paramMap.get('cityName')) {
+      this.cityName = lastViewedCity;
+      this.getWeatherData();
+    }
   }
 
   ngAfterViewInit(): void {
@@ -198,55 +219,78 @@ export class CityWeatherComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getWeatherData(): void {
-    if (!this.cityName.trim()) {
-      this.error = 'Please enter a city name';
-      return;
-    }
-
     this.loading = true;
     this.error = '';
+    
+    // Clear existing data to avoid showing stale data during loading
     this.weatherData = null;
     this.currentWeather = null;
     this.location = null;
     this.forecast = null;
     this.forecastData = [];
+    
+    // Get current weather data
+    this.weatherService.getCurrentWeather(this.cityName)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.weatherData = data;
+          this.currentWeather = data.current;
+          this.location = data.location;
+          
+          // After getting location data, update the map
+          if (this.location) {
+            // Wait for map to be ready
+            if (this.map) {
+              this.updateMapWithLocation(this.location.lat, this.location.lon, this.currentWeather?.condition.text || '');
+            } else {
+              // If map isn't ready yet, initialize it
+              this.initMap();
+              // Try updating again after a delay
+              setTimeout(() => {
+                if (this.map && this.location) {
+                  this.updateMapWithLocation(this.location.lat, this.location.lon, this.currentWeather?.condition.text || '');
+                }
+              }, 1000);
+            }
+          }
+          
+          this.loading = false;
+          
+          // After getting current weather, get forecast data
+          this.getForecastData();
+        },
+        error: (err) => {
+          console.error('Error fetching weather data:', err);
+          this.error = `Could not load weather data for ${this.cityName}. Please try another city.`;
+          this.loading = false;
+        }
+      });
+  }
 
-    // Reset map if it exists
-    if (this.map && this.mapInitialized) {
-      // Clear any existing markers
-      this.clearMapMarkers();
-    } else {
-      // If map isn't initialized yet, try to initialize it
-      setTimeout(() => {
-        this.initMap();
-      }, 300);
+  getForecastData(): void {
+    if (!this.cityName.trim()) {
+      return;
     }
-
-    switch (this.selectedWeatherType) {
-      case 'Current':
-        this.getCurrentWeather();
-        break;
-      case 'Forecast':
-        this.getForecastWeather();
-        break;
-      case 'Astronomy':
-        this.getAstronomyWeather();
-        break;
-      case 'Alerts':
-        this.getAlertsWeather();
-        break;
-      case 'Air Quality':
-        this.getAirQualityWeather();
-        break;
-      case 'Sports':
-        this.getSportsWeather();
-        break;
-      case 'Historical':
-        this.getHistoricalWeather();
-        break;
-      default:
-        this.getCurrentWeather();
-    }
+    
+    this.weatherService.getForecastWeather(this.cityName, 7)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.forecast = data.forecast;
+          this.forecastData = data.forecast.forecastday;
+          
+          // Update the UI based on the selected weather type
+          this.updateWeatherDisplay();
+        },
+        error: (err) => {
+          console.error('Error fetching forecast data:', err);
+          // Don't show error for forecast if we already have current weather
+          if (!this.currentWeather) {
+            this.error = `Could not load forecast data for ${this.cityName}. Please try another city.`;
+          }
+        }
+      });
   }
 
   searchWeather(): void {
@@ -579,6 +623,36 @@ export class CityWeatherComponent implements OnInit, AfterViewInit, OnDestroy {
         marker.bindPopup(`<b>${this.location.name}, ${this.location.country}</b><br>Current temperature: ${this.currentWeather?.temp_c}°C`).openPopup();
         this.mapMarkers.push(marker);
       }
+    }
+  }
+
+  updateWeatherDisplay(): void {
+    // Update the UI based on the selected weather type
+    switch (this.selectedWeatherType) {
+      case 'Current':
+        // Current weather is already displayed
+        break;
+      case 'Forecast':
+        // Ensure forecast data is loaded
+        if (!this.forecast && this.cityName) {
+          this.getForecastData();
+        }
+        break;
+      case 'Astronomy':
+        this.getAstronomyWeather();
+        break;
+      case 'Alerts':
+        this.getAlertsWeather();
+        break;
+      case 'Air Quality':
+        this.getAirQualityWeather();
+        break;
+      case 'Sports':
+        this.getSportsWeather();
+        break;
+      case 'Historical':
+        this.getHistoricalWeather();
+        break;
     }
   }
 
