@@ -17,7 +17,7 @@ import { CityWeatherComponent } from './pages/city-weather/city-weather.componen
 // Additional components
 import { WeatherDashboardComponent } from './components/weather-dashboard/weather-dashboard.component';
 import { WeatherNewsComponent } from './components/weather-news/weather-news.component';
-import { SettingsComponent } from './components/settings/settings.component';
+import { SettingsComponent } from './pages/settings/settings.component';
 
 // Pipes
 import { TemperaturePipe } from './pipes/temperature.pipe';

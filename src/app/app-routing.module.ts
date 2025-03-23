@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './common/login/login.component';
 import { ContactComponent } from './pages/contact/contact.component';
-import { SettingsComponent } from './components/settings/settings.component';
+import { SettingsComponent } from './pages/settings/settings.component';
 import { CityWeatherComponent } from './pages/city-weather/city-weather.component';
 import { AuthGuard } from './guards/auth.guard';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
