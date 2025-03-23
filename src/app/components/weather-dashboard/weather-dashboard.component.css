@@ -26,6 +26,7 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: var(--card-bg);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   position: relative;
@@ -35,6 +36,14 @@
 .weather-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+:host-context(.dark-theme) .weather-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+:host-context(.dark-theme) .weather-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
 }
 
 .weather-card-content {

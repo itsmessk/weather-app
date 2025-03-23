@@ -136,7 +136,7 @@
 .quick-links-card h3 {
   margin-top: 0;
   margin-bottom: 20px;
-  color: #fefefe;
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 1.4rem;
   border-bottom: 2px solid #3498db;
@@ -195,7 +195,7 @@
 .featured-locations-card h3 {
   margin-top: 0;
   margin-bottom: 20px;
-  color: #ffffff;
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 1.4rem;
   border-bottom: 2px solid #3498db;
@@ -255,7 +255,7 @@
 .weather-tips-card h3 {
   margin-top: 0;
   margin-bottom: 20px;
-  color: #ffffff;
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 1.4rem;
   border-bottom: 2px solid #3498db;
@@ -294,7 +294,7 @@
   margin-top: 0;
   margin-bottom: 5px;
   font-size: 1.1rem;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .tip-content p {
