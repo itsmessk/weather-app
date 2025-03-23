@@ -35,7 +35,7 @@ export class WeatherDashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private weatherService: WeatherService,
-    private settingsService: SettingsService,
+    public settingsService: SettingsService,
     private themeService: ThemeService,
     private router: Router
   ) {}

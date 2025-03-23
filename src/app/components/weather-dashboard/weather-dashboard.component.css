@@ -39,7 +39,7 @@
 
 .weather-card-content {
   padding: 20px;
-  color: white;
+  color: rgb(0, 0, 0);
   height: 100%;
   display: flex;
   flex-direction: column;

@@ -116,43 +116,48 @@ export class CityWeatherComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
       
-      // Create map instance if not already initialized
-      if (!this.map) {
-        this.map = L.map('map', {
-          center: [51.505, -0.09], // Default to London
-          zoom: 10,
-          attributionControl: true
-        });
-        
-        // Add tile layer based on theme
-        this.themeService.darkMode$
-          .pipe(takeUntil(this.destroy$))
-          .subscribe(isDark => {
-            if (this.map) {
-              this.updateMapTiles(isDark);
-            }
-          });
-        
-        // Add scale control
-        L.control.scale().addTo(this.map);
-        
-        this.mapInitialized = true;
-        console.log('Map initialized successfully');
-        
-        // Force a redraw of the map to ensure it renders properly
-        setTimeout(() => {
-          if (this.map) {
-            this.map.invalidateSize();
-          }
-        }, 100);
-        
-        // If we already have weather data, update the map
-        if (this.location && this.currentWeather) {
-          this.updateMapWithLocation(this.location.lat, this.location.lon, this.currentWeather.condition.text);
-        }
+      // If map already exists, remove it first to prevent duplicates
+      if (this.map) {
+        this.map.remove();
+        this.map = null;
       }
+      
+      // Create map instance
+      this.map = L.map('map', {
+        center: [51.505, -0.09], // Default to London
+        zoom: 10,
+        attributionControl: true
+      });
+      
+      // Add tile layer based on theme
+      this.themeService.darkMode$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(isDark => {
+          if (this.map) {
+            this.updateMapTiles(isDark);
+          }
+        });
+      
+      // Add scale control
+      L.control.scale().addTo(this.map);
+      
+      this.mapInitialized = true;
+      console.log('Map initialized successfully');
+      
+      // Force a redraw of the map to ensure it renders properly
+      setTimeout(() => {
+        if (this.map) {
+          this.map.invalidateSize();
+          
+          // If we already have weather data, update the map
+          if (this.location && this.currentWeather) {
+            this.updateMapWithLocation(this.location.lat, this.location.lon, this.currentWeather.condition.text);
+          }
+        }
+      }, 500);
     } catch (error) {
       console.error('Error initializing map:', error);
+      this.mapInitialized = false;
     }
   }
 
@@ -247,10 +252,30 @@ export class CityWeatherComponent implements OnInit, AfterViewInit, OnDestroy {
   searchWeather(): void {
     if (this.cityName.trim()) {
       this.getWeatherData();
-      // Ensure map is updated after getting weather data
-      setTimeout(() => {
-        this.updateMap();
-      }, 500);
+      
+      // Force map to reinitialize completely
+      if (this.map) {
+        this.map.remove();
+        this.map = null;
+        this.mapInitialized = false;
+        
+        // Wait for DOM to update before reinitializing
+        setTimeout(() => {
+          this.initMap();
+          
+          // After map is initialized, update it with location data once weather data is loaded
+          const checkDataAndUpdateMap = () => {
+            if (this.location && this.currentWeather) {
+              this.updateMapWithLocation(this.location.lat, this.location.lon, this.currentWeather.condition.text);
+            } else {
+              // Keep checking until data is available
+              setTimeout(checkDataAndUpdateMap, 500);
+            }
+          };
+          
+          setTimeout(checkDataAndUpdateMap, 1000);
+        }, 300);
+      }
     }
   }
 
@@ -514,7 +539,7 @@ export class CityWeatherComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.map) {
           this.map.invalidateSize();
         }
-      }, 100);
+      }, 300);
     } catch (error) {
       console.error('Error updating map:', error);
     }

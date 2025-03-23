@@ -47,7 +47,7 @@
   <!-- Grid Layout -->
   <div *ngIf="!loading && favoriteLocations.length > 0 && dashboardLayout === 'grid'" class="weather-grid">
     <div *ngFor="let city of favoriteLocations" class="weather-card" 
-         [ngClass]="weatherData[city]?.current ? getBackgroundClass(weatherData[city].current.condition.code) : 'bg-default'"
+         [ngClass]="weatherData[city] && weatherData[city].current ? getBackgroundClass(weatherData[city].current.condition.code) : 'bg-default'"
          (click)="viewCityDetails(city)">
       <div *ngIf="weatherData[city]" class="weather-card-content">
         <div class="location-info">
@@ -63,7 +63,7 @@
             {{ weatherData[city].current.temp_c | temperature:temperatureUnit }}
           </div>
           <div class="condition">
-            <i [class]="weatherData[city].current.condition.code | weatherIcon:weatherData[city].current.is_day"></i>
+            <i [class]="weatherData[city].current.condition.code | weatherIcon:!!weatherData[city].current.is_day"></i>
             <span>{{ weatherData[city].current.condition.text }}</span>
           </div>
         </div>
@@ -100,7 +100,7 @@
   <!-- List Layout -->
   <div *ngIf="!loading && favoriteLocations.length > 0 && dashboardLayout === 'list'" class="weather-list">
     <div *ngFor="let city of favoriteLocations" class="weather-list-item"
-         [ngClass]="weatherData[city]?.current ? getBackgroundClass(weatherData[city].current.condition.code) : 'bg-default'"
+         [ngClass]="weatherData[city] && weatherData[city].current ? getBackgroundClass(weatherData[city].current.condition.code) : 'bg-default'"
          (click)="viewCityDetails(city)">
       <div *ngIf="weatherData[city]" class="weather-list-content">
         <div class="location-column">
@@ -109,7 +109,7 @@
         </div>
         
         <div class="condition-column">
-          <i [class]="weatherData[city].current.condition.code | weatherIcon:weatherData[city].current.is_day"></i>
+          <i [class]="weatherData[city].current.condition.code | weatherIcon:!!weatherData[city].current.is_day"></i>
           <span>{{ weatherData[city].current.condition.text }}</span>
         </div>
         

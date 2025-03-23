@@ -13,6 +13,7 @@ import { ThemeService } from '../../services/theme.service';
 export class HomeComponent implements OnInit, OnDestroy {
   searchQuery: string = '';
   isDarkMode: boolean = false;
+  featuredCities: string[] = ['London', 'New York', 'Tokyo', 'Sydney', 'Paris', 'Dubai'];
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -37,7 +38,13 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   search(): void {
     if (this.searchQuery.trim()) {
-      this.router.navigate(['/city', this.searchQuery.trim()]);
+      this.router.navigate(['/city-weather', this.searchQuery.trim()]);
+    }
+  }
+
+  navigateToCity(city: string): void {
+    if (city) {
+      this.router.navigate(['/city-weather', city]);
     }
   }
 
