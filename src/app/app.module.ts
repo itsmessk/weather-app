@@ -15,6 +15,7 @@ import { HighlightDirective } from './directives/highlight.directive';
 import { ThemeToggleComponent } from './common/theme-toggle/theme-toggle.component';
 import { FooterComponent } from './common/footer/footer.component';
 import { ContactComponent } from './pages/contact/contact.component';
+import { CityWeatherComponent } from './pages/city-weather/city-weather.component';
 
 // Additional components
 import { WeatherDashboardComponent } from './components/weather-dashboard/weather-dashboard.component';
@@ -39,6 +40,7 @@ import { DateFormatPipe } from './pipes/date-format.pipe';
     ThemeToggleComponent,
     FooterComponent,
     ContactComponent,
+    CityWeatherComponent,
     // Additional components
     WeatherDashboardComponent,
     WeatherNewsComponent,
