@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, FormControl, Validators } from '@angular/forms';
 import { SettingsService, UserSettings } from '../../services/settings.service';
 import { ThemeService } from '../../services/theme.service';
 import { Subject } from 'rxjs';
@@ -13,7 +13,7 @@ import { takeUntil } from 'rxjs/operators';
 export class SettingsComponent implements OnInit, OnDestroy {
   settings: UserSettings;
   settingsForm: FormGroup = new FormGroup({});
-  newLocation: string = '';
+  newLocationControl = new FormControl('');
   isDarkMode: boolean = false;
   
   temperatureUnits = [
@@ -116,9 +116,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
   
   addLocation(): void {
-    if (this.newLocation.trim() && !this.favoriteLocations.value.includes(this.newLocation.trim())) {
-      this.favoriteLocations.push(this.fb.control(this.newLocation.trim()));
-      this.newLocation = '';
+    const newLocation = this.newLocationControl.value;
+    if (newLocation && newLocation.trim() && !this.favoriteLocations.value.includes(newLocation.trim())) {
+      this.favoriteLocations.push(this.fb.control(newLocation.trim()));
+      this.newLocationControl.reset('');
     }
   }
   

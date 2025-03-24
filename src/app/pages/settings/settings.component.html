@@ -60,7 +60,7 @@
           <label class="form-label">Favorite Locations</label>
           <div class="input-group mb-2">
             <input type="text" class="form-control" placeholder="Add location" 
-                   [(ngModel)]="newLocation" [ngModelOptions]="{standalone: true}">
+                   [formControl]="newLocationControl">
             <button class="btn btn-outline-secondary" type="button" (click)="addLocation()">
               <i class="bi bi-plus"></i> Add
             </button>
