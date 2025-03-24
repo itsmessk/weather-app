@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -13,13 +13,9 @@ import { ThemeToggleComponent } from './common/theme-toggle/theme-toggle.compone
 import { FooterComponent } from './common/footer/footer.component';
 import { ContactComponent } from './pages/contact/contact.component';
 import { CityWeatherComponent } from './pages/city-weather/city-weather.component';
-
-// Additional components
 import { WeatherDashboardComponent } from './components/weather-dashboard/weather-dashboard.component';
 import { WeatherNewsComponent } from './components/weather-news/weather-news.component';
 import { SettingsComponent } from './pages/settings/settings.component';
-
-// Pipes
 import { TemperaturePipe } from './pipes/temperature.pipe';
 import { WeatherIconPipe } from './pipes/weather-icon.pipe';
 import { DateFormatPipe } from './pipes/date-format.pipe';
@@ -46,7 +42,8 @@ import { DateFormatPipe } from './pipes/date-format.pipe';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

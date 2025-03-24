@@ -56,16 +56,15 @@ export class WeatherNewsComponent implements OnInit, OnDestroy {
               .slice(0, 4)
               .map((article: any) => ({
                 source: article.source,
-                author: article.author || 'Unknown',
+                author: article.author,
                 title: article.title,
-                description: article.description || 'No description available',
+                description: article.description,
                 url: article.url,
-                urlToImage: article.urlToImage || 'assets/images/news-placeholder.jpg',
+                urlToImage: article.urlToImage,
                 publishedAt: article.publishedAt,
                 content: article.content
               }));
           } else {
-            // If single news item is returned
             this.newsItems = [this.news];
           }
           this.loading = false;

@@ -16,6 +16,7 @@ const routes: Routes = [
   { path: 'settings', component: SettingsComponent, canActivate: [AuthGuard] },
   { path: 'city-weather', component: CityWeatherComponent },
   { path: 'city/:cityName', component: CityWeatherComponent },
+  { path: 'city-weather/:cityName', component: CityWeatherComponent },
   { path: '**', component: NotFoundComponent }
 ];
 

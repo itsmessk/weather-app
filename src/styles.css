@@ -57,7 +57,7 @@
 .theme-transition *,
 .theme-transition *:before,
 .theme-transition *:after {
-  transition: all 0.3s ease !important;
+  transition: all ease !important;
   transition-delay: 0 !important;
 }
 

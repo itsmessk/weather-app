@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { SettingsService, UserSettings } from '../../services/settings.service';
 import { ThemeService } from '../../services/theme.service';
 import { Subject } from 'rxjs';
@@ -11,6 +12,7 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class SettingsComponent implements OnInit, OnDestroy {
   settings: UserSettings;
+  settingsForm: FormGroup = new FormGroup({});
   newLocation: string = '';
   isDarkMode: boolean = false;
   
@@ -35,10 +37,12 @@ export class SettingsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   
   constructor(
+    private fb: FormBuilder,
     private settingsService: SettingsService,
     private themeService: ThemeService
   ) {
     this.settings = this.settingsService.currentSettings;
+    this.initForm();
   }
 
   ngOnInit(): void {
@@ -47,6 +51,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(settings => {
         this.settings = { ...settings };
+        this.updateForm(settings);
       });
     
     // Subscribe to theme changes
@@ -62,9 +67,46 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
   
+  initForm(): void {
+    this.settingsForm = this.fb.group({
+      temperatureUnit: [this.settings.temperatureUnit, Validators.required],
+      defaultCity: [this.settings.defaultCity, Validators.required],
+      refreshInterval: [this.settings.refreshInterval, Validators.required],
+      dashboardLayout: [this.settings.dashboardLayout, Validators.required],
+      showNotifications: [this.settings.showNotifications],
+      favoriteLocations: this.fb.array(
+        this.settings.favoriteLocations.map(location => this.fb.control(location))
+      )
+    });
+  }
+  
+  updateForm(settings: UserSettings): void {
+    this.settingsForm.patchValue({
+      temperatureUnit: settings.temperatureUnit,
+      defaultCity: settings.defaultCity,
+      refreshInterval: settings.refreshInterval,
+      dashboardLayout: settings.dashboardLayout,
+      showNotifications: settings.showNotifications
+    });
+    
+    // Update favorite locations FormArray
+    const locationsArray = this.settingsForm.get('favoriteLocations') as FormArray;
+    locationsArray.clear();
+    settings.favoriteLocations.forEach(location => {
+      locationsArray.push(this.fb.control(location));
+    });
+  }
+  
+  get favoriteLocations(): FormArray {
+    return this.settingsForm.get('favoriteLocations') as FormArray;
+  }
+  
   saveSettings(): void {
-    this.settingsService.updateSettings(this.settings);
-    alert('Settings saved successfully!');
+    if (this.settingsForm.valid) {
+      const formValue = this.settingsForm.value;
+      this.settingsService.updateSettings(formValue);
+      alert('Settings saved successfully!');
+    }
   }
   
   resetSettings(): void {
@@ -74,14 +116,14 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
   
   addLocation(): void {
-    if (this.newLocation.trim() && !this.settings.favoriteLocations.includes(this.newLocation.trim())) {
-      this.settings.favoriteLocations.push(this.newLocation.trim());
+    if (this.newLocation.trim() && !this.favoriteLocations.value.includes(this.newLocation.trim())) {
+      this.favoriteLocations.push(this.fb.control(this.newLocation.trim()));
       this.newLocation = '';
     }
   }
   
-  removeLocation(location: string): void {
-    this.settings.favoriteLocations = this.settings.favoriteLocations.filter(loc => loc !== location);
+  removeLocation(index: number): void {
+    this.favoriteLocations.removeAt(index);
   }
   
   toggleDarkMode(): void {
