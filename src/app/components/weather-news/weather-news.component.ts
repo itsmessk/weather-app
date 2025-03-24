@@ -71,7 +71,7 @@ export class WeatherNewsComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error('Error fetching news data:', err);
-          this.error = 'Unable to load weather news. Please try again later. This error occurs because we are using a free API key from <a href="https://newsapi.org" target="_blank">newsapi.org</a>. To receive news updates in production, we need to upgrade to a paid API key from <a href="https://newsapi.org" target="_blank">newsapi.org</a>.';
+          this.error = 'Unable to load weather news. Please try again later. This error occurs because we are using a free API key from newsapi.org. To receive news updates in production, we need to upgrade to a paid API key from newsapi.org.';
           this.loading = false;
         }
       });
