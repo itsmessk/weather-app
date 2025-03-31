@@ -13,7 +13,7 @@ import { ThemeService } from '../../services/theme.service';
 export class HomeComponent implements OnInit, OnDestroy {
   searchQuery: string = '';
   isDarkMode: boolean = false;
-  featuredCities: string[] = ['London', 'New York', 'Tokyo', 'Sydney', 'Paris', 'Dubai'];
+  featuredCities: string[] = ['Chennai', 'London', 'New York', 'Tokyo', 'Sydney', 'Paris', 'Dubai'];
   private destroy$ = new Subject<void>();
 
   constructor(
